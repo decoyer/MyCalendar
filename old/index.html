@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar</title>
+    <link rel="icon" href="../assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- 헤더 영역 -->
+    <div class="header">
+        <button onclick="move(-1)">◀ 이전 달</button>
+        <div class="selector">
+            <select id="yearSelect"></select>
+            <select id="monthSelect"></select>
+        </div>
+        <button onclick="move(1)">다음 달 ▶</button>
+    </div>
+
+    <!-- 달력 영역 -->
+    <div class="calendar">
+        <table>
+            <thead>
+                <tr>
+                    <th>일</th>
+                    <th>월</th>
+                    <th>화</th>
+                    <th>수</th>
+                    <th>목</th>
+                    <th>금</th>
+                    <th>토</th>
+                </tr>
+            </thead>
+            <!-- 달력 내용 영역 -->
+            <tbody id="calendarBody"></tbody>
+        </table>
+    </div>
+
+    <!-- 메모 입력 모달창 -->
+    <div class="modal" id="memoModal">
+        <div class="modal-content">
+            <!-- 선택된 날짜 표시 -->
+            <h3 id="modalDate"></h3>
+            <hr>
+            <!-- 메모 목록 -->
+            <ul class="memo-list" id="memoList"></ul>
+            <hr>
+            <input type="text" id="newMemoInput" placeholder="새 메모 입력" style="margin-top: 20px;">
+            <div class="modal-buttons">
+                <button class="add-button" onclick="addMemo()">추가</button>
+                <button class="close-button" onclick="closeModal()">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM 요소 변수 선언
+        const calendarBody = document.getElementById('calendarBody');
+        const memoModal = document.getElementById('memoModal');
+        const modalDate = document.getElementById('modalDate');
+        const memoList = document.getElementById('memoList');
+        const newMemoInput = document.getElementById('newMemoInput');
+        const yearSelect = document.getElementById('yearSelect');
+        const monthSelect = document.getElementById('monthSelect');
+
+        // 현재 날짜 정보
+        let today = new Date();
+        let currentYear = today.getFullYear();
+        let currentMonth = today.getMonth();
+        let selectedDateKey = '';
+
+        // 헤더 초기화
+        function dateSelect() {
+            // 연도 선택 옵션 추가
+            for (let y = today.getFullYear() - 10; y <= today.getFullYear() + 10; y++) {
+                const option = document.createElement('option');
+                option.value = y;
+                option.textContent = `${y}년`;
+                yearSelect.appendChild(option);
+            }
+
+            // 월 선택 옵션 추가
+            for (let m = 0; m < 12; m++) {
+                const option = document.createElement('option');
+                option.value = m;
+                option.textContent = `${m + 1}월`;
+                monthSelect.appendChild(option);
+            }
+        }
+
+        // 연도 선택 시 동작
+        yearSelect.addEventListener('change', () => {
+            currentYear = parseInt(yearSelect.value);
+            draw(currentYear, currentMonth);
+        });
+
+        // 월 선택 시 동작
+        monthSelect.addEventListener('change', () => {
+            currentMonth = parseInt(monthSelect.value);
+            draw(currentYear, currentMonth);
+        });
+
+        // 달력 그리기 함수
+        function draw(year, month) {
+            calendarBody.innerHTML = ''; // 달력 초기화
+
+            const firstDay = new Date(year, month, 1).getDay(); // 첫날 요일
+            const lastDate = new Date(year, month + 1, 0).getDate(); // 이번 달 마지막 날짜
+            const prevLastDate = new Date(year, month, 0).getDate(); // 이전 달 마지막 날짜
+
+            yearSelect.value = year;
+            monthSelect.value = month;
+
+            let row = document.createElement('tr');
+
+            // 이전 달 날짜 출력
+            for (let i = 0; i < firstDay; i++) {
+                const prevDate = prevLastDate - firstDay + i + 1;
+                const cell = document.createElement('td');
+                cell.className = 'empty';
+                cell.textContent = prevDate;
+                cell.onclick = () => move(-1); // 이전 달로 이동
+                row.appendChild(cell);
+            }
+
+            // 이번 달 날짜 출력
+            for (let date = 1; date <= lastDate; date++) {
+                if (row.children.length === 7) {
+                    calendarBody.appendChild(row);
+                    row = document.createElement('tr');
+                }
+
+                const cell = document.createElement('td');
+                cell.textContent = date;
+
+                // 오늘 날짜 강조 표시
+                if (year === today.getFullYear() && month === today.getMonth() && date === today.getDate())
+                    cell.classList.add('today');
+
+                // 주말 색상 강조 표시
+                if (row.children.length % 7 === 0) cell.classList.add('sunday');
+                else if (row.children.length % 7 === 6) cell.classList.add('saturday');
+
+                const key = `${year}-${month + 1}-${date}`;
+                const memos = JSON.parse(localStorage.getItem(key) || "[]");
+
+                // 메모 표시
+                const memoWrapper = document.createElement('div');
+                memoWrapper.className = 'memo-list-wrapper';
+
+                memos.forEach(m => {
+                    const span = document.createElement('span');
+                    span.className = 'memo';
+                    span.textContent = `✨\t${m}`;
+                    memoWrapper.appendChild(span);
+                });
+
+                cell.appendChild(memoWrapper);
+
+                // 날짜 클릭 시 모달 표시
+                cell.addEventListener('click', () => {
+                    selectedDateKey = key;
+                    openModal(year, month + 1, date, memos);
+                });
+
+                row.appendChild(cell);
+            }
+
+            // 다음 달 날짜 출력
+            let nextDate = 1;
+            while (row.children.length < 7) {
+                const cell = document.createElement('td');
+                cell.className = 'empty';
+                cell.textContent = nextDate++;
+                cell.onclick = () => move(1); // 다음 달로 이동
+                row.appendChild(cell);
+            }
+
+            calendarBody.appendChild(row);
+        }
+
+        // 월별 이동
+        function move(n) {
+            currentMonth += n;
+
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+
+            draw(currentYear, currentMonth);
+        }
+
+        // 모달 바깥 클릭 시 닫기
+        memoModal.addEventListener('click', (e) => {
+            if (e.target === memoModal) closeModal();
+        });
+
+        // 모달 그리기 함수
+        function openModal(year, month, date, memos) {
+            modalDate.textContent = `${year}년 ${month}월 ${date}일`;
+            newMemoInput.value = '';
+            memoList.innerHTML = '';
+
+            memos.forEach((memo, index) => {
+                const li = document.createElement('li');
+
+                // 메모 내용 표시용 input 생성
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = memo;
+                input.readOnly = true;
+                input.classList.add('memo-input');
+
+                // 수정 버튼
+                const editBtn = document.createElement('button');
+                editBtn.textContent = '수정';
+                editBtn.classList.add('edit-button');
+                editBtn.onclick = () => {
+                    if (input.readOnly) {
+                        // 읽기 전용 해제
+                        input.readOnly = false;
+                        input.focus();
+                        editBtn.textContent = '저장';
+                        editBtn.classList.add('save-button');
+                    } else {
+                        // 저장 처리
+                        const newContent = input.value.trim();
+                        if (newContent === '') {
+                            deleteMemo(index);
+                            return;
+                        }
+                        const memos = JSON.parse(localStorage.getItem(selectedDateKey) || "[]");
+                        memos[index] = newContent;
+                        localStorage.setItem(selectedDateKey, JSON.stringify(memos));
+                        input.readOnly = true;
+                        editBtn.textContent = '수정';
+                        editBtn.classList.remove('save-button');
+                    }
+                };
+
+                // 삭제 버튼
+                const delBtn = document.createElement('button');
+                delBtn.textContent = '삭제';
+                delBtn.classList.add('delete-button');
+                delBtn.onclick = () => deleteMemo(index);
+
+                li.appendChild(input);
+                li.appendChild(editBtn);
+                li.appendChild(delBtn);
+
+                memoList.appendChild(li);
+            });
+
+            memoModal.style.display = 'flex';
+        }
+
+        // 모달 닫기 함수
+        function closeModal() {
+            memoModal.style.display = 'none';
+            draw(currentYear, currentMonth); // 달력 그리기
+        }
+
+        // Enter 키로 메모 추가
+        newMemoInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addMemo();
+        });
+
+        // 메모 추가 함수
+        function addMemo() {
+            const newMemo = newMemoInput.value.trim();
+            if (newMemo === '') return;
+
+            const memos = JSON.parse(localStorage.getItem(selectedDateKey) || "[]");
+            memos.push(newMemo);
+            localStorage.setItem(selectedDateKey, JSON.stringify(memos));
+
+            openModal(...selectedDateKey.split('-').map(Number), memos);
+        }
+
+        // 메모 삭제 함수
+        function deleteMemo(index) {
+            const memos = JSON.parse(localStorage.getItem(selectedDateKey) || "[]");
+            memos.splice(index, 1);
+
+            if (memos.length === 0) {
+                localStorage.removeItem(selectedDateKey);
+            } else {
+                localStorage.setItem(selectedDateKey, JSON.stringify(memos));
+            }
+
+            openModal(...selectedDateKey.split('-').map(Number), memos);
+        }
+
+        // 메모 수정 함수
+        function editMemo(index) {
+            const memos = JSON.parse(localStorage.getItem(selectedDateKey) || "[]");
+            const newContent = prompt("메모 수정", memos[index]);
+
+            if (newContent !== null) {
+                if (newContent.trim() === '') {
+                    deleteMemo(index);
+                } else {
+                    memos[index] = newContent.trim();
+                    localStorage.setItem(selectedDateKey, JSON.stringify(memos));
+                    openModal(...selectedDateKey.split('-').map(Number), memos);
+                }
+            }
+        }
+
+        dateSelect(); // 연도 선택 초기화
+        draw(currentYear, currentMonth); // 달력 그리기
+    </script>
+</body>
+
+</html>

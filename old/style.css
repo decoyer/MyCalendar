@@ -1,0 +1,245 @@
+body {
+  background-color: #ffffe0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  user-select: none;
+}
+
+.calendar {
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 75rem;
+}
+
+th {
+  background-color: #8c8f97;
+  border: 1px solid #ccc;
+  font-size: 20px;
+  width: 1rem;
+  overflow: hidden;
+  padding: 10px;
+}
+
+thead th:first-child {
+  border-top-left-radius: 10px;
+}
+
+thead th:last-child {
+  border-top-right-radius: 10px;
+}
+
+tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+
+tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}
+
+td {
+  background-color: #fff;
+  font-size: 20px;
+  border: 1px solid #ccc;
+  height: 5rem;
+  padding: 10px 5px;
+  cursor: pointer;
+  text-align: left;
+  vertical-align: top;
+  transition: 0.5s ease;
+}
+
+td.today {
+  background-color: #ffee8c;
+  font-weight: bold;
+}
+
+td.sunday {
+  color: #dc143c;
+  background-color: #ffeceb;
+}
+
+td.saturday {
+  color: #305cde;
+  background-color: #dcfff1;
+}
+
+td.empty {
+  color: #666;
+  background-color: #f0f1f2;
+}
+
+td:hover {
+  background-color: #ffc067;
+  opacity: 0.8;
+}
+
+.memo {
+  color: #4caf50;
+  font-size: 0.75em;
+  font-weight: bold;
+  display: block;
+}
+
+.header {
+  font-size: 36px;
+  margin: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.header button {
+  font-size: 24px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+
+.header button:hover {
+  color: #6305dc;
+  opacity: 0.8;
+}
+
+.selector select {
+  padding: 5px;
+  font-size: 24px;
+  border: none;
+  border-radius: 10px;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  min-width: 25%;
+  max-height: 50%;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  text-align: left;
+  font-size: 20px;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  font-size: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.modal-content input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.modal-content button {
+  color: #fff;
+  min-width: 100px;
+  margin: 10px 0;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.5s ease;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.modal-content .add-button {
+  background-color: #4caf50;
+}
+
+.modal-content .close-button {
+  background-color: #666;
+}
+
+.modal-content button:hover {
+  opacity: 0.8;
+}
+
+.memo-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+  height: 50%;
+  overflow-y: auto;
+}
+
+.memo-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.memo-list li span {
+  flex-grow: 1;
+  word-break: break-word;
+}
+
+.memo-list button {
+  margin-left: 10px;
+  font-size: 16px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+
+.memo-list .edit-button {
+  background-color: #007bff;
+}
+
+.memo-list .save-button {
+  background-color: #0f52ba;
+}
+
+.memo-list .delete-button {
+  background-color: #f44336;
+}
+
+.memo-list button:hover {
+  opacity: 0.8;
+}
+
+.memo-list-wrapper {
+  height: 80%;
+  overflow: auto;
+}
+
+.memo-list::-webkit-scrollbar,
+.memo-list-wrapper::-webkit-scrollbar {
+  display: none;
+}
