@@ -1,5 +1,5 @@
 # MyCalendar
-Dynamic Note Calendar with *JavaScript"
+Dynamic Note Calendar with *JavaScript*
 
 using *Lit Element*
 
@@ -8,7 +8,7 @@ using *Lit Element*
   <img src="https://github.com/user-attachments/assets/6956579a-4418-46cb-ac2f-a072f6696e9a" alt="main">
 </p>
 
-- 동적으로 설정된 기간의 달력 조회
+- 동적 달력 조회 및 UX/UI 고도화
 - 메모 키워드 기능 및 메모 내용 유지
 - *Lit Element* 웹 프레임워크를 통해 *html*과 *CSS*로 구현된 웹페이지
 
