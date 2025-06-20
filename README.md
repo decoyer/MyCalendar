@@ -5,7 +5,7 @@ using *Lit Element*
 
 ## Details
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/6956579a-4418-46cb-ac2f-a072f6696e9a" alt="main">
+  <img src="https://github.com/user-attachments/assets/c376b959-7ef6-4b4c-a890-ae85c93f5095" alt="main">
 </p>
 
 - 동적 달력 조회 및 UX/UI 고도화
